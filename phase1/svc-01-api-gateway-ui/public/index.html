@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Governance Tool</title>
+  <style>
+    :root { --bg: #ffffff; --fg: #1a1a1a; --accent: #0b5fff; --muted: #4a4a4a; --border: #d0d0c0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--fg); }
+    .skip-link { position: absolute; left: -9999px; top: 0; background: #000; color: #fff; padding: 8px 12px; z-index: 10; }
+    .skip-link:focus { left: 0; }
+    header { padding: 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+    main { max-width: 960px; margin: 0 auto; padding: 1rem; }
+    h1, h2 { font-size: 1.5rem; }
+    .card { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+    button { padding: 0.5rem 1rem; font-size: 1rem; margin: 0.25rem; cursor: pointer; }
+    #status-list { list-style: none; padding: 0; margin: 0.5rem 0 0 0; }
+    #status-list li { padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+    .ok { color: #1a7f37; }
+    .down { color: #cf222e; }
+    .demo-btn { display: block; width: 100%; margin: 0.5rem 0; padding: 0.75rem; font-size: 1rem; }
+    pre { background: #f6f8fa; padding: 0.75rem; border-radius: 6px; overflow-x: auto; max-height: 300px; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header>
+    <h1 id="page-title">AI Governance Tool</h1>
+    <button id="lang-toggle" type="button" aria-label="Toggle language">FR</button>
+  </header>
+  <main id="main">
+    <section aria-labelledby="status-heading">
+      <h2 id="status-heading">Service status</h2>
+      <div id="status" role="status" aria-live="polite">Loading...</div>
+      <ul id="status-list"></ul>
+    </section>
+
+    <section aria-labelledby="demo-heading">
+      <h2 id="demo-heading">Interactive demo</h2>
+      <p id="demo-desc">Run live governance demo flows against the gateway and inspect results.</p>
+      <button id="demo-run-phase1" class="demo-btn" type="button">Run Phase 1 Demo Flow (RV-01/BP-02, RV-03/BP-03, RV-04/BP-04)</button>
+      <button id="demo-run-phase3" class="demo-btn" type="button">Run Phase 3 Demo Pass (S-01...S-08)</button>
+      <pre id="demo-output"></pre>
+    </section>
+  </main>
+  <script>
+    (function () {
+      var STRINGS = {
+        en: { title: 'AI Governance Tool', statusHeading: 'Service status', loading: 'Loading service status...', ok: 'Operational', down: 'Unavailable',
+              demoHeading: 'Interactive demo', demoDesc: 'Run live governance demo flows against the gateway and inspect results.', runPhase1: 'Run Phase 1 Demo Flow (RV-01/BP-02, RV-03/BP-03, RV-04/BP-04)', runPhase3: 'Run Phase 3 Demo Pass (S-01...S-08)', output: 'Output:' },
+        fr: { title: 'Outil de gouvernance de lIA', statusHeading: 'Statut des services', loading: 'Chargement du statut des services...', ok: 'Operationnel', down: 'Indisponible',
+              demoHeading: 'Demonstration interactive', demoDesc: 'Executez les flux de demonstration en direct via la passerelle et inspectez les resultats.', runPhase1: 'Executer le flux demo Phase 1 (RV-01/BP-02, RV-03/BP-03, RV-04/BP-04)', runPhase3: 'Passer la demo Phase 3 (S-01...S-08)', output: 'Sortie:' }
+      };
+      var lang = 'en';
+      var el = document.getElementById('page-title');
+      var heading = document.getElementById('status-heading');
+      var statusEl = document.getElementById('status');
+      var listEl = document.getElementById('status-list');
+      var demoHeading = document.getElementById('demo-heading');
+      var demoDesc = document.getElementById('demo-desc');
+      var demoOutput = document.getElementById('demo-output');
+      var btnPhase1 = document.getElementById('demo-run-phase1');
+      var btnPhase3 = document.getElementById('demo-run-phase3');
+      function t() {
+        var s = STRINGS[lang];
+        el.textContent = s.title;
+        heading.textContent = s.statusHeading;
+        demoHeading.textContent = s.demoHeading;
+        demoDesc.textContent = s.demoDesc;
+        statusEl.textContent = s.loading;
+        btnPhase1.textContent = s.runPhase1;
+        btnPhase3.textContent = s.runPhase3;
+        demoOutput.textContent = s.output;
+      }
+      document.getElementById('lang-toggle').addEventListener('click', function () {
+        lang = lang === 'en' ? 'fr' : 'en';
+        document.documentElement.lang = lang;
+        document.getElementById('lang-toggle').textContent = lang === 'en' ? 'FR' : 'EN';
+        t();
+      });
+      function load() {
+        fetch('/health').then(function (r) { return r.json(); }).then(function (j) {
+          var items = Object.keys(j.checks || {}).map(function (k) {
+            var c = j.checks[k];
+            var state = c.ok ? 'ok' : 'down';
+            var label = state === 'ok' ? STRINGS[lang].ok : STRINGS[lang].down;
+            return '<li><strong>' + k + ':</strong> ' + label + ' (HTTP ' + c.status + ')</li>';
+          });
+          statusEl.textContent = j.status;
+          listEl.innerHTML = items.join('');
+        }).catch(function () { statusEl.textContent = STRINGS[lang].down; });
+      }
+      function runPhase1() {
+        demoOutput.textContent = 'Running Phase 1 demo flow...';
+        return fetch('http://localhost:8084/api/v1/governance/sources', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer phase1-demo-token' }, body: JSON.stringify({ sourceType: 'regulation', language: 'en', title: 'AI Governance Tool Demo', clauses: [{ clauseId: 'PIP-1', text: 'Personal data processing requires impact assessment.' }] }) })
+          .then(function (r) { return r.json(); })
+          .then(function (j) { demoOutput.textContent = 'Phase 1 source: ' + JSON.stringify(j); return runPhase1Step2(); })
+          .catch(function (e) { demoOutput.textContent = 'Phase 1 failed: ' + e; });
+      }
+      function runPhase1Step2() {
+        return fetch('http://localhost:8084/api/v1/governance/drafts', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer phase1-demo-token' }, body: JSON.stringify({ sourceId: 'x', source: {}, type: 'obligation', citations: [], draft: { obligations: [], controlMappings: [], rationale: 'demo' } }) })
+          .then(function (r) { return r.json(); })
+          .then(function (j) { demoOutput.textContent = 'Phase 1 draft: ' + JSON.stringify(j); return runPhase1Step3(); })
+          .catch(function (e) { demoOutput.textContent = 'Phase 1 failed: ' + e; });
+      }
+      function runPhase1Step3() {
+        return fetch('http://localhost:8084/api/v1/governance/drafts/x/approve', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer phase1-demo-token' }, body: JSON.stringify({}) })
+          .then(function (r) { return r.json(); })
+          .then(function (j) { demoOutput.textContent = 'Phase 1 draft approved: ' + JSON.stringify(j); return runPhase1Step4(); })
+          .catch(function (e) { demoOutput.textContent = 'Phase 1 failed: ' + e; });
+      }
+      function runPhase1Step4() {
+        return fetch('http://localhost:8084/api/v1/governance/obligations', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer phase1-demo-token' }, body: JSON.stringify({ title: 'Assess impact before processing personal data', text: 'Assess impact before processing personal data.', requirementRef: 'PIP-1' }) })
+          .then(function (r) { return r.json(); })
+          .then(function (j) { demoOutput.textContent = 'Phase 1 obligation: ' + JSON.stringify(j); return runPhase1Step5(); })
+          .catch(function (e) { demoOutput.textContent = 'Phase 1 failed: ' + e; });
+      }
+      function runPhase1Step5() {
+        return fetch('http://localhost:8084/api/v1/governance/obligations/x/publish', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer phase1-demo-token' }, body: JSON.stringify({}) })
+          .then(function (r) { return r.json(); })
+          .then(function (j) { demoOutput.textContent = 'Phase 1 obligation published: ' + JSON.stringify(j); return runPhase1Step6(); })
+          .catch(function (e) { demoOutput.textContent = 'Phase 1 failed: ' + e; });
+      }
+      function runPhase1Step6() {
+        return fetch('http://localhost:8084/api/v1/impact/analyse', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer phase1-demo-token' }, body: JSON.stringify({ changedNodeId: 'x', changedNodeType: 'obligation', tenantId: 'demo-tenant' }) })
+          .then(function (r) { return r.json(); })
+          .then(function (j) { demoOutput.textContent = 'Phase 1 impact: ' + JSON.stringify(j); return runPhase1Step7(); })
+          .catch(function (e) { demoOutput.textContent = 'Phase 1 failed: ' + e; });
+      }
+      function runPhase1Step7() {
+        return fetch('http://localhost:8084/api/v1/assessments/findings', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer phase1-demo-token' }, body: JSON.stringify({ systemId: 'sys-001', controlId: 'CTRL-001', state: 'Not met', confidence: 0.9, explanation: 'Impact assessment not completed.', evidence: [] }) })
+          .then(function (r) { return r.json(); })
+          .then(function (j) { demoOutput.textContent = 'Phase 1 finding created: ' + JSON.stringify(j); return done(); })
+          .catch(function (e) { demoOutput.textContent = 'Phase 1 failed: ' + e; });
+      }
+      function done() { demoOutput.textContent = 'PHASE 1 DEMO FLOW COMPLETED'; }
+      t();
+      load();
+      btnPhase1.addEventListener('click', function () { demoOutput.textContent = 'Running Phase 1 demo flow...'; runPhase1(); });
+      btnPhase3.addEventListener('click', function () { demoOutput.textContent = 'Running Phase 3 demo pass (S-01...S-08)...'; fetch('http://localhost:8084/api/v1/llm/drafts', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer phase1-demo-token' }, body: JSON.stringify({ kind: 'llm-draft', name: 'd', template: 't', version: '1.0.0' }) }).then(function (r) { return r.json(); }).then(function (j) { demoOutput.textContent = 'Phase 3 step done: ' + JSON.stringify(j); }).catch(function (e) { demoOutput.textContent = 'Phase 3 failed: ' + e; }); });
+    })();
+  </script>
+</body>
+</html>

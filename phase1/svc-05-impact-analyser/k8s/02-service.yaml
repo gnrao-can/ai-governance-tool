@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-governance-svc-05-impact-analyser
+  namespace: gov-core
+  labels:
+    app.kubernetes.io/name: ai-governance-svc-05-impact-analyser
+    app.kubernetes.io/component: impact-analyser
+    app.kubernetes.io/part-of: ai-governance-tool
+    environment: trl5
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ai-governance-svc-05-impact-analyser
+    app.kubernetes.io/component: impact-analyser
+  ports:
+    - name: http
+      port: 8082
+      targetPort: 8082
+      protocol: TCP
+      portPerPod: 1
+      targetPortPerPod: 8082

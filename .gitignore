@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# OS & Editor / Office temp files
+.DS_Store
+~$*
+
+# Logs & local environment
+*.log
+.env
+.env.*

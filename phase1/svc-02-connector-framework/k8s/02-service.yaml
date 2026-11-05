@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-governance-svc-02-connector-framework
+  namespace: gov-core
+  labels:
+    app.kubernetes.io/name: ai-governance-svc-02-connector-framework
+    app.kubernetes.io/component: connector-framework
+    app.kubernetes.io/part-of: ai-governance-tool
+    environment: trl5
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ai-governance-svc-02-connector-framework
+    app.kubernetes.io/component: connector-framework
+  ports:
+    - name: http
+      port: 8085
+      targetPort: 8085
+      protocol: TCP
+      portPerPod: 1
+      targetPortPerPod: 8085

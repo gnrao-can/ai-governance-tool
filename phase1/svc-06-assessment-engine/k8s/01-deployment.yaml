@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-governance-svc-06-assessment-engine
+  namespace: gov-core
+  labels:
+    app.kubernetes.io/name: ai-governance-svc-06-assessment-engine
+    app.kubernetes.io/component: assessment-engine
+    app.kubernetes.io/part-of: ai-governance-tool
+    environment: trl5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ai-governance-svc-06-assessment-engine
+      app.kubernetes.io/component: assessment-engine
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ai-governance-svc-06-assessment-engine
+        app.kubernetes.io/component: assessment-engine
+    spec:
+      containers:
+        - name: assessment-engine
+          image: localhost/ai-governance-svc-06-assessment-engine:latest
+          ports:
+            - containerPort: 8083
+              protocol: TCP
+              name: http
+          env:
+            - name: PORT
+              value: "8083"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8083
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8083
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 20
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      terminationGracePeriodSeconds: 30

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-governance-svc-10-traceability-graph
+  namespace: gov-core
+  labels:
+    app.kubernetes.io/name: ai-governance-svc-10-traceability-graph
+    app.kubernetes.io/component: traceability-graph
+    app.kubernetes.io/part-of: ai-governance-tool
+    environment: trl5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ai-governance-svc-10-traceability-graph
+      app.kubernetes.io/component: traceability-graph
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ai-governance-svc-10-traceability-graph
+        app.kubernetes.io/component: traceability-graph
+    spec:
+      containers:
+        - name: traceability-graph
+          image: localhost/ai-governance-svc-10-traceability-graph:latest
+          ports:
+            - containerPort: 8087
+              protocol: TCP
+              name: http
+          env:
+            - name: PORT
+              value: "8087"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8087
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8087
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 20
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      terminationGracePeriodSeconds: 30

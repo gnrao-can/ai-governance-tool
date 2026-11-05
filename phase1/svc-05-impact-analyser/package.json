@@ -1,0 +1,15 @@
+{
+  "name": "ai-governance-svc-05-impact-analyser",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Governance Tool — SVC-05 Impact Analyser (C-08): traverses traceability graph and sets response tier per affected system.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "uuid": "^11.0.0"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "ai-governance-svc-04-requirement-interpreter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Governance Tool — SVC-04 Requirement Interpreter (C-07): drafts obligations and control mappings from changed sources with citations; drafts subject to human approval (D-02).",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "uuid": "^11.0.0"
+  }
+}

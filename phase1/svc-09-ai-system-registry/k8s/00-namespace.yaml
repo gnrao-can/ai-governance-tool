@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gov-core
+  labels:
+    app.kubernetes.io/part-of: ai-governance-tool
+    app.kubernetes.io/component: ai-system-registry
+    environment: trl5

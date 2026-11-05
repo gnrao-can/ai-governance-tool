@@ -1,0 +1,15 @@
+{
+  "name": "ai-governance-svc-10-traceability-graph",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Governance Tool — SVC-10 Traceability Graph (C-13): nodes and edges across governance entities; impact queries.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "uuid": "^11.0.0"
+  }
+}

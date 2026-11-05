@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-governance-svc-08-remediation-recommender
+  namespace: gov-core
+  labels:
+    app.kubernetes.io/name: ai-governance-svc-08-remediation-recommender
+    app.kubernetes.io/component: remediation-recommender
+    app.kubernetes.io/part-of: ai-governance-tool
+    environment: trl5
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ai-governance-svc-08-remediation-recommender
+    app.kubernetes.io/component: remediation-recommender
+  ports:
+    - name: http
+      port: 8085
+      targetPort: 8085
+      protocol: TCP
+      portPerPod: 1
+      targetPortPerPod: 8085

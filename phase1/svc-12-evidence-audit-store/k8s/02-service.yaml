@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-governance-svc-12-evidence-audit-store
+  namespace: gov-core
+  labels:
+    app.kubernetes.io/name: ai-governance-svc-12-evidence-audit-store
+    app.kubernetes.io/component: evidence-audit-store
+    app.kubernetes.io/part-of: ai-governance-tool
+    environment: trl5
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ai-governance-svc-12-evidence-audit-store
+    app.kubernetes.io/component: evidence-audit-store
+  ports:
+    - name: http
+      port: 8089
+      targetPort: 8089
+      protocol: TCP
+      portPerPod: 1
+      targetPortPerPod: 8089

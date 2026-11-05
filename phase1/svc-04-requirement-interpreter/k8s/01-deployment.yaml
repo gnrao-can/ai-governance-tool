@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-governance-svc-04-requirement-interpreter
+  namespace: gov-core
+  labels:
+    app.kubernetes.io/name: ai-governance-svc-04-requirement-interpreter
+    app.kubernetes.io/component: requirement-interpreter
+    app.kubernetes.io/part-of: ai-governance-tool
+    environment: trl5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ai-governance-svc-04-requirement-interpreter
+      app.kubernetes.io/component: requirement-interpreter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ai-governance-svc-04-requirement-interpreter
+        app.kubernetes.io/component: requirement-interpreter
+    spec:
+      containers:
+        - name: requirement-interpreter
+          image: localhost/ai-governance-svc-04-requirement-interpreter:latest
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+              name: http
+          env:
+            - name: PORT
+              value: "8081"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 20
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      terminationGracePeriodSeconds: 30

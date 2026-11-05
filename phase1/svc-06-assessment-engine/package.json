@@ -1,0 +1,15 @@
+{
+  "name": "ai-governance-svc-06-assessment-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Governance Tool — SVC-06 Assessment Engine (C-09): applicability, control evaluation, five-state results, explanations, confidence, LLM evidence review, findings links.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "uuid": "^11.0.0"
+  }
+}

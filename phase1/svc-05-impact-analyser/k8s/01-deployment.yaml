@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-governance-svc-05-impact-analyser
+  namespace: gov-core
+  labels:
+    app.kubernetes.io/name: ai-governance-svc-05-impact-analyser
+    app.kubernetes.io/component: impact-analyser
+    app.kubernetes.io/part-of: ai-governance-tool
+    environment: trl5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ai-governance-svc-05-impact-analyser
+      app.kubernetes.io/component: impact-analyser
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ai-governance-svc-05-impact-analyser
+        app.kubernetes.io/component: impact-analyser
+    spec:
+      containers:
+        - name: impact-analyser
+          image: localhost/ai-governance-svc-05-impact-analyser:latest
+          ports:
+            - containerPort: 8082
+              protocol: TCP
+              name: http
+          env:
+            - name: PORT
+              value: "8082"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 20
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      terminationGracePeriodSeconds: 30

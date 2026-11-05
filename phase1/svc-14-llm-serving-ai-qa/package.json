@@ -1,0 +1,9 @@
+{
+  "name": "ai-governance-svc-14-llm-serving-ai-qa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Governance Tool - SVC-14 LLM Serving & AI QA (C-19): LLM serving, AI QA (answer key, prompt governance).",
+  "main": "src/index.js",
+  "scripts": { "start": "node src/index.js", "dev": "node src/index.js" },
+  "dependencies": { "express": "^4.19.2", "uuid": "^11.0.0" }
+}

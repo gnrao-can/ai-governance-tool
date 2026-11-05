@@ -1,0 +1,15 @@
+{
+  "name": "ai-governance-svc-12-evidence-audit-store",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Governance Tool — SVC-12 Evidence and Audit Store (C-16): evidence artefacts, provenance, hash-chained audit log, W3C PROV.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "uuid": "^11.0.0"
+  }
+}

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-governance-svc-10-traceability-graph
+  namespace: gov-core
+  labels:
+    app.kubernetes.io/name: ai-governance-svc-10-traceability-graph
+    app.kubernetes.io/component: traceability-graph
+    app.kubernetes.io/part-of: ai-governance-tool
+    environment: trl5
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ai-governance-svc-10-traceability-graph
+    app.kubernetes.io/component: traceability-graph
+  ports:
+    - name: http
+      port: 8087
+      targetPort: 8087
+      protocol: TCP
+      portPerPod: 1
+      targetPortPerPod: 8087
